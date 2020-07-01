@@ -14,3 +14,5 @@ plugins:
   - vue
 rules:
     vue/require-v-for-key: 0
+ignorePatterns:
+  - 'babel*'
