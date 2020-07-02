@@ -24,7 +24,7 @@
     </section>
     <section class="row controls" v-if="!gameIsRunnings">
       <div class="small-12 columns">
-        <button id="start-game">START NEW GAME</button>
+        <button id="start-game" @click="startGame">START NEW GAME</button>
       </div>
     </section>
     <section class="row controls" v-else>
@@ -55,6 +55,13 @@ export default {
       playerHealth: 100,
       monsterHealth: 100,
       gameIsRunning: false
+    }
+  },
+  methods: {
+    startGame() {
+      this.gameIsRunning = true;
+      this.playerHealth = 100;
+      this.monsterHealth = 100;
     }
   }
 }
