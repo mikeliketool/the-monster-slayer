@@ -38,7 +38,8 @@
     <section class="row log" v-if="turns.length > 0">
       <div class="small-12 columns">
         <ul>
-            <li v-for="turn in turns">
+            <li v-for="turn in turns" 
+                :class="{'player-turn': turn.isPlayer, 'monster-turn': !turn.isPlayer}">
               {{ turn.text }}
             </li>
         </ul>
@@ -99,6 +100,10 @@ export default {
     },
     doHealing() {
       this.player.heal();
+      this.turns.unshift({
+        isPlayer: this.player.isPlayer,
+        text: `${this.player.displayName} heal for 10`
+      });
       this.damageContestant(this.player);
     },
     giveUp() {
