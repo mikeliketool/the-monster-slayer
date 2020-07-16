@@ -30,7 +30,7 @@
     <section class="row controls" v-else>
       <div class="small-12 columns">
         <button id="attack" @click="doAttack">ATTACK</button>
-        <button id="special-attack">SPECIAL ATTACK</button>
+        <button id="special-attack" @click="doSpecialAttack">SPECIAL ATTACK</button>
         <button id="heal">HEAL</button>
         <button id="give-up">GIVE UP</button>
       </div>
@@ -83,14 +83,17 @@ export default {
 
       return false;
     },
-    doAttack() {
-      this.damageOpponent(10, 3, 'monsterHealth');
+    doAttack(event, maxDamage = 10, minDamage = 3) {
+      this.damageOpponent(maxDamage, minDamage, 'monsterHealth');
       if (this.checkForWin('monsterHealth')) {
         return;
       }
 
       this.damageOpponent(12, 5, 'playerHealth');
       this.checkForWin('playerHealth');
+    },
+    doSpecialAttack() {
+      this.doAttack(undefined, 20, 10);
     }
   }
 }
