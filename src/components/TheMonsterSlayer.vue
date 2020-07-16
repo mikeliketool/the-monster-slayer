@@ -31,7 +31,7 @@
       <div class="small-12 columns">
         <button id="attack" @click="doAttack">ATTACK</button>
         <button id="special-attack" @click="doSpecialAttack">SPECIAL ATTACK</button>
-        <button id="heal">HEAL</button>
+        <button id="heal" @click="doHealing">HEAL</button>
         <button id="give-up">GIVE UP</button>
       </div>
     </section>
@@ -67,7 +67,7 @@ export default {
         'monsterHealth': 'Monster'
       }
     },
-    damageOpponent(maxDamage, minDamage, opponentHealth) {
+    damageOpponent(opponentHealth = 'playerHealth', minDamage = 5, maxDamage = 12) {
       const damage = Math.max(Math.floor(Math.random() * maxDamage) + 1, minDamage);
       this[opponentHealth] -= damage;
     },
@@ -83,17 +83,22 @@ export default {
 
       return false;
     },
-    doAttack(event, maxDamage = 10, minDamage = 3) {
-      this.damageOpponent(maxDamage, minDamage, 'monsterHealth');
+    doAttack(event, minDamage = 3, maxDamage = 10) {
+      this.damageOpponent('monsterHealth', minDamage, maxDamage);
       if (this.checkForWin('monsterHealth')) {
         return;
       }
-
-      this.damageOpponent(12, 5, 'playerHealth');
+      this.damageOpponent();
       this.checkForWin('playerHealth');
     },
     doSpecialAttack() {
       this.doAttack(undefined, 20, 10);
+    },
+    doHealing() {
+      this.playerHealth = this.playerHealth <= 90 ?
+        this.playerHealth + 10 :
+        100;
+      this.damageOpponent();
     }
   }
 }
