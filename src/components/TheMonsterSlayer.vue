@@ -6,8 +6,8 @@
         <div class="healthbar">
             <div class="healthbar text-center"
                  style="background-color: green; margin: 0; color: white;"
-                 :style="{width: `${playerHealth}%`}">
-              {{ playerHealth }}
+                 :style="{width: `${this.player.health}%`}">
+              {{ this.player.health }}
             </div>
         </div>
       </div>
@@ -16,8 +16,8 @@
         <div class="healthbar">
             <div class="healthbar text-center"
                  style="background-color: green; margin: 0; color: white;"
-                 :style="{width: `${monsterHealth}%`}">
-                {{ monsterHealth }}
+                 :style="{width: `${this.monster.health}%`}">
+                {{ this.monster.health }}
             </div>
         </div>
       </div>
@@ -35,11 +35,11 @@
         <button id="give-up" @click="giveUp">GIVE UP</button>
       </div>
     </section>
-    <section class="row log">
+    <section class="row log" v-if="turns.length > 0">
       <div class="small-12 columns">
         <ul>
-            <li>
-
+            <li v-for="turn in turns">
+              {{ turn.text }}
             </li>
         </ul>
       </div>
@@ -48,32 +48,35 @@
 </template>
 
 <script>
+import { Contestant } from '../models/contestant.js'
 export default {
   name: 'TheMonsterSlayer',
   data() {
     return {
-      playerHealth: 100,
-      monsterHealth: 100,
-      gameIsRunning: false
+      player: new Contestant('player', 'You'),
+      monster: new Contestant('monster', 'Monster'),
+      gameIsRunning: false,
+      turns: []
     }
   },
   methods: {
     startGame() {
       this.gameIsRunning = true;
-      this.playerHealth = 100;
-      this.monsterHealth = 100;
-      this.displayNames = {
-        'playerHealth': 'You',
-        'monsterHealth': 'Monster'
-      }
+      this.player.health = 100;
+      this.monster.health = 100;
+      this.turns = [];
     },
-    damageOpponent(opponentHealth = 'playerHealth', minDamage = 5, maxDamage = 12) {
+    damageContestant(contestant, minDamage = 5, maxDamage = 12) {
       const damage = Math.max(Math.floor(Math.random() * maxDamage) + 1, minDamage);
-      this[opponentHealth] -= damage;
+      contestant.takeDamage(damage);
+      this.turns.unshift({
+        isPlayer: contestant.isPlayer,
+        text: `${contestant.displayName} took ${damage} damage`
+      });
     },
-    checkForWin(opponentHealth) {
-      if (this[opponentHealth] <=0 ){
-        if (confirm(`${this.displayNames[opponentHealth]} Lost! Start another game?`)) {
+    checkForWin(contestant) {
+      if (contestant.health <=0 ){
+        if (confirm(`${contestant.displayName} Lost! Start another game?`)) {
           this.startGame();
         } else {
           this.gameIsRunning = false;
@@ -84,21 +87,19 @@ export default {
       return false;
     },
     doAttack(event, minDamage = 3, maxDamage = 10) {
-      this.damageOpponent('monsterHealth', minDamage, maxDamage);
-      if (this.checkForWin('monsterHealth')) {
+      this.damageContestant(this.monster, minDamage, maxDamage);
+      if (this.checkForWin(this.monster)) {
         return;
       }
-      this.damageOpponent();
-      this.checkForWin('playerHealth');
+      this.damageContestant(this.player);
+      this.checkForWin(this.player);
     },
     doSpecialAttack() {
       this.doAttack(undefined, 20, 10);
     },
     doHealing() {
-      this.playerHealth = this.playerHealth <= 90 ?
-        this.playerHealth + 10 :
-        100;
-      this.damageOpponent();
+      this.player.heal();
+      this.damageContestant(this.player);
     },
     giveUp() {
       this.gameIsRunning = false;
