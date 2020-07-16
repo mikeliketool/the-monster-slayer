@@ -32,7 +32,7 @@
         <button id="attack" @click="doAttack">ATTACK</button>
         <button id="special-attack" @click="doSpecialAttack">SPECIAL ATTACK</button>
         <button id="heal" @click="doHealing">HEAL</button>
-        <button id="give-up">GIVE UP</button>
+        <button id="give-up" @click="giveUp">GIVE UP</button>
       </div>
     </section>
     <section class="row log">
@@ -99,6 +99,9 @@ export default {
         this.playerHealth + 10 :
         100;
       this.damageOpponent();
+    },
+    giveUp() {
+      this.gameIsRunning = false;
     }
   }
 }
